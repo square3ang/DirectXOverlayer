@@ -21,7 +21,7 @@ void OpenDebugTerminal()
     if (AllocConsole())
     {
         freopen_s((FILE**)stdout, "CONOUT$", "w", stdout);
-        SetWindowText(GetConsoleWindow(), "ADOFAIHack v1.0.0");
+        SetWindowText(GetConsoleWindow(), "DirectXOverlayer Debug");
     }
 }
 
