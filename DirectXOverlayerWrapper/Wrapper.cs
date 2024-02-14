@@ -72,7 +72,7 @@ namespace DirectXOverlayer
             var strc = str;
             foreach (var tag in Main.tags)
             {
-                if (!tag.Value.Item2 && !Main.IsPlaying) continue;
+                if (!tag.Value.Item2 && !Main.IsPlaying || !str.Contains($"&[{tag.Key}]")) continue;
                 var val = tag.Value.Item1();
                 try
                 {

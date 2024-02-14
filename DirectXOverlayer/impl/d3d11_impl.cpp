@@ -28,7 +28,7 @@
 #include <queue>
 
 
-#define defaultText "<color=#FF0000>D</color><color=#FF5F00>i</color><color=#FFBF00>r</color><color=#DFFF00>e</color><color=#7FFF00>c</color><color=#1FFF00>t</color><color=#00FF3F>X</color><color=#00FF9F>O</color><color=#00FEFF>v</color><color=#009FFF>e</color><color=#003FFF>r</color><color=#1F00FF>l</color><color=#7F00FF>a</color><color=#DF00FF>y</color><color=#FF00BF>e</color><color=#FF005F>r</color>"
+
 
 
 
@@ -193,7 +193,7 @@ void d3d11_impl::Render(Renderer* renderer)
 
 		if (ImGui::Button(GetTranslation("AddText"))) {
 			auto name = std::string(GetTranslation("Text")) + " " + std::to_string(elements.size());
-			auto elem = new TextElement(name, defaultText);
+			auto elem = new TextElement(name);
 			elem->x = 0.5;
 			elem->y = 0.5;
 

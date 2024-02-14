@@ -5,6 +5,8 @@
 #include "../csscolorparser.hpp"
 #include "../imgui/imgui_stdlib.h"
 
+
+#define defaultText "<color=#FF0000>D</color><color=#FF5F00>i</color><color=#FFBF00>r</color><color=#DFFF00>e</color><color=#7FFF00>c</color><color=#1FFF00>t</color><color=#00FF3F>X</color><color=#00FF9F>O</color><color=#00FEFF>v</color><color=#009FFF>e</color><color=#003FFF>r</color><color=#1F00FF>l</color><color=#7F00FF>a</color><color=#DF00FF>y</color><color=#FF00BF>e</color><color=#FF005F>r</color>"
 static std::unordered_map<std::string, std::pair< std::vector<std::pair<std::pair<int, int>, ImVec4>>, std::string>> colcache;
 static std::regex rgx("<color\\s*=\\s*(.*?)[^>]*>(.*?)<\\/color>");
 
@@ -19,7 +21,9 @@ void TextElement::Render() {
 
 	ImVec2 startCurPos = ImGui::GetCursorPos();
 
-	auto text = std::string(ApplyTags(this->text.c_str()));
+	auto isPlaying = ((bool*(*)())d3d11_impl::apiset["GetIsPlaying"])();
+
+	auto text = std::string(ApplyTags(isPlaying ? this->text.c_str() : this->textNotPlaying.c_str()));
 
 	auto isincache = colcache.find(text) != colcache.end();
 
@@ -123,13 +127,11 @@ void TextElement::Render() {
 }
 
 void TextElement::RenderSettingsUI() {
-	ImGui::InputTextMultiline(GetTranslation("Text"), &textCache);
-	if (ImGui::Button(GetTranslation("ApplyText"))) {
-		text = textCache;
-	}
+	ImGui::InputTextMultiline(GetTranslation("Text"), &text);
+	ImGui::InputTextMultiline(GetTranslation("NotPlayingText"), &textNotPlaying);
 }
 
-TextElement::TextElement(std::string name, std::string text) : UIElement(name) {
-	this->text = std::string(text);
-	this->textCache = this->text;
+TextElement::TextElement(std::string name) : UIElement(name) {
+	this->text = defaultText;
+	this->textNotPlaying = defaultText;
 }

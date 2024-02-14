@@ -8,8 +8,8 @@ public:
 	virtual void Render();
 	
 	std::string text;
-	std::string textCache;
+	std::string textNotPlaying;
 
-	TextElement(std::string name, std::string text);
+	TextElement(std::string name);
 };
 
