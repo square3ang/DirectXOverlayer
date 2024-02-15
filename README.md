@@ -7,6 +7,8 @@ Just ADOFAI Overlayer Working With ***DirectX11 Hooking.***
 	<a href="https://github.com/square3ang/DirectXOverlayer/graphs/contributors"><img src="https://img.shields.io/github/contributors/square3ang/DirectXOverlayer?style=for-the-badge"></a>
 </p>
 
+DirectXOverlayer is licensed under the GPLv3 License. See [LICENSE](LICENSE) for the full License.
+
 [Join Kkitut's Discord Server For Support!](https://discord.gg/vaVXtsRY37)
 
 # Features
@@ -17,9 +19,7 @@ Just ADOFAI Overlayer Working With ***DirectX11 Hooking.***
 * Text system similar to Unity
   * Rich Text (currently, "\<color>" only) Implementation
 
-# LICENSING
-
-DirectXOverlayer is licensed under the GPLv3 License. See [LICENSE](LICENSE) for the full License.
+# Open Source Libraries
 
 - [ImGui](https://github.com/bvgastel/imgui/tree/sdf) (SDF, Edited by me for Rich Text Color Support)
 - [DirectXHook](https://github.com/techiew/DirectXHook)
