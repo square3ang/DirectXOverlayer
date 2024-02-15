@@ -314,7 +314,7 @@ void d3d11_impl::Render(Renderer* renderer)
 
 		auto wind = ImGui::FindWindowByName(name.c_str());
 
-		if (wind != nullptr && elem->inited && io.DisplaySize.x == lastScreenX && io.DisplaySize.y == lastScreenY && (wind->Pos.x != elem->actualX || wind->Pos.y != elem->actualY)) {
+		if (issetting && wind != nullptr && elem->inited && io.DisplaySize.x == lastScreenX && io.DisplaySize.y == lastScreenY && (wind->Pos.x != elem->actualX || wind->Pos.y != elem->actualY)) {
 			auto posafter = ImVec2(wind->Pos);
 			posafter = ImVec2(posafter.x + wind->Size.x / 2, posafter.y + wind->Size.y / 2);
 			elem->x = posafter.x / io.DisplaySize.x;
