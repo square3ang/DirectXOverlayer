@@ -55,7 +55,6 @@ namespace DirectXOverlayer
         }
         static bool GetIsSetting()
         {
-            if (Main.isEditingText) return false;
             return isSetting;
         }
         static void EndSetting()
