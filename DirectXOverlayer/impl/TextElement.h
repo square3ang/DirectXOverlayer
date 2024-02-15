@@ -9,6 +9,7 @@ public:
 	
 	std::string text;
 	std::string textNotPlaying;
+	float fontSize;
 
 	TextElement(std::string name);
 };

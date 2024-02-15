@@ -21,7 +21,7 @@ void OpenDebugTerminal()
     if (AllocConsole())
     {
         freopen_s((FILE**)stdout, "CONOUT$", "w", stdout);
-        SetWindowText(GetConsoleWindow(), "DirectXOverlayer Debug");
+        SetWindowText(GetConsoleWindow(), L"DirectXOverlayer Debug");
     }
 }
 
@@ -33,11 +33,13 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                        LPVOID lpReserved
                      )
 {
-    /*if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
-        OpenDebugTerminal();
-    }*/
+    if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
+        //OpenDebugTerminal();
+    }
     return TRUE;
 }
+
+
 
 extern "C" __declspec(dllexport) void Start() {
     MH_Initialize();

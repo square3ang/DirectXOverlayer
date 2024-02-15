@@ -5,6 +5,7 @@
 
 #define Log(str) ((void(*)(const char*))d3d11_impl::apiset["Log"])(str)
 #define GetTranslation(key) ((const char*(*)(const char*))d3d11_impl::apiset["GetTranslation"])(key)
+#define OpenEditText(str) ((void(*)(std::string*))d3d11_impl::apiset["OpenEditText"])(str)
 
 #include "../DirectXHook/Renderer.h"
 #include "../DirectXHook/IRenderCallback.h"

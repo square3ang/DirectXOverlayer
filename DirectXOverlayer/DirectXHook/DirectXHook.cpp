@@ -91,7 +91,7 @@ IDXGISwapChain* DirectXHook::CreateDummySwapChain()
 	wc.cbSize = sizeof(wc);
 	wc.lpfnWndProc = DefWindowProc;
 	wc.lpszClassName = TEXT("dummy class");
-	RegisterClassExA(&wc);
+	RegisterClassEx(&wc);
 	HWND hwnd = CreateWindow(wc.lpszClassName, TEXT(""), WS_DISABLED, 0, 0, 0, 0, NULL, NULL, NULL, nullptr);
 
 	DXGI_SWAP_CHAIN_DESC desc{ 0 };

@@ -27,6 +27,8 @@
 #include "../imgui/imgui_internal.h"
 #include <queue>
 
+#include "../minhook/include/MinHook.h"
+
 
 
 
@@ -52,9 +54,19 @@ extern "C" __declspec(dllexport) void RegisterAPI(void* func, const char* APINam
 	d3d11_impl::apiset[APIName] = func;
 }
 
+extern "C" __declspec(dllexport) void SetStringWithReference(std::string * reference, const char* str) {
+	*reference = std::string(str);
+}
+
+extern "C" __declspec(dllexport) const char* GetStringWithReference(std::string * reference) {
+	return reference->c_str();
+}
+
 static ImFontAtlas* alt;
 
 LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	
+	//printf("a %d\n", uMsg);
 
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
 		return true;
@@ -120,7 +132,7 @@ void d3d11_impl::Render(Renderer* renderer)
 {
 	static bool inited = false;
 
-	
+
 
 	if (!inited) {
 		//InitFramework(renderer->d3d11Device, spriteBatch, window);
@@ -133,6 +145,8 @@ void d3d11_impl::Render(Renderer* renderer)
 
 		oWndProc = (WNDPROC)SetWindowLongPtr(renderer->window, GWLP_WNDPROC, (LONG_PTR)WndProc);
 
+
+
 		((void(*)())apiset["HelloWorld"])();
 
 		//fontmap["ArialNP"] = AddArialFont(32, false);
@@ -142,7 +156,8 @@ void d3d11_impl::Render(Renderer* renderer)
 		io.Fonts->Build();
 
 		CreateThread(0, 0, &LoadFontAsync, 0, 0, NULL);
-		
+
+
 		/*io.Fonts->Build();
 		ImGui_ImplDX11_CreateDeviceObjects();*/
 
@@ -161,8 +176,9 @@ void d3d11_impl::Render(Renderer* renderer)
 		actReload = false;
 	}
 
-	
-	//CheckMouseEvents();
+
+
+	if (((bool(*)())apiset["GetIsEditingText"])()) return;
 
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -170,7 +186,7 @@ void d3d11_impl::Render(Renderer* renderer)
 
 	ImGui::NewFrame();
 
-	
+
 
 	//auto sz = ImGui::CalcTextSize(teststring);
 
@@ -212,7 +228,11 @@ void d3d11_impl::Render(Renderer* renderer)
 
 			ImGui::SetNextItemWidth(io.DisplaySize.x / 5 - (200 * 900 / io.DisplaySize.y));
 
-			ImGui::InputText(("##" + addrstr).c_str(), &elem->name);
+			ImGui::TextUnformatted(elem->name.c_str());
+			ImGui::SameLine();
+			if (ImGui::Button((std::string(GetTranslation("EditName")) + "##" + addrstr).c_str())) {
+				OpenEditText(&elem->name);
+			}
 			ImGui::SameLine();
 			if (ImGui::Button((std::string(GetTranslation("Settings")) + "##" + addrstr).c_str())) {
 				elem->isSettingOpen = true;
@@ -279,7 +299,7 @@ void d3d11_impl::Render(Renderer* renderer)
 		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 	}
 
-	ImGui::PushFont(d3d11_impl::GetDefaultFont(60.0f * io.DisplaySize.y / 900.0f));
+	
 
 	
 	
@@ -322,7 +342,7 @@ void d3d11_impl::Render(Renderer* renderer)
 	
 
 
-	ImGui::PopFont();
+	
 	if (issetting) {
 		ImGui::PopStyleColor();
 		ImGui::PopStyleVar(3);

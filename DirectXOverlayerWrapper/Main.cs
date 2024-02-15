@@ -16,7 +16,10 @@ using DirectXOverlayer.Tags;
 
 namespace DirectXOverlayer
 {
-
+    public class StringWrapper
+    {
+        public static string a;
+    }
     public class Main
     {
         [DllImport("kernel32", SetLastError = true)]
@@ -33,13 +36,17 @@ namespace DirectXOverlayer
 
         public static Dictionary<string, (Func<object>, bool)> tags = new();
 
+        public static bool isEditingText = false;
+        public static IntPtr curEditingText;
+
         public static bool IsPlaying
         {
             get
             {
                 var cdt = scrConductor.instance;
-                if (cdt != null)
-                    return cdt.isGameWorld;
+                var ctl = scrController.instance;
+                if (ctl != null && cdt != null)
+                    return !ctl.paused && cdt.isGameWorld;
                 return false;
             }
         }
@@ -83,6 +90,8 @@ namespace DirectXOverlayer
 
             logo = new Texture2D(2, 2);
             logo.LoadImage(File.ReadAllBytes(Path.Combine(entry.Path, "Logo.png")));
+
+            //HangulPatch.SetHook();
 
             entry.OnGUI = OnGUI;
             entry.OnUpdate = OnUpdate;
@@ -137,6 +146,7 @@ namespace DirectXOverlayer
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(translations[language]["OpenSettings"]))
             {
+                //Input.imeCompositionMode = IMECompositionMode.On;
                 Wrapper.isSetting = true;
             }
             GUILayout.FlexibleSpace();
@@ -149,6 +159,7 @@ namespace DirectXOverlayer
             if (Input.GetKeyDown(KeyCode.F3))
             {
                 UnityModManager.UI.Instance.ToggleWindow(true);
+                //Input.imeCompositionMode = IMECompositionMode.On;
                 Wrapper.isSetting = true;
             }
         }
@@ -158,6 +169,7 @@ namespace DirectXOverlayer
         {
             public static void Postfix(ref Event __result)
             {
+                if (isEditingText) return;
                 if (Wrapper.isSetting && __result.type is EventType.MouseDown or EventType.MouseUp)
                 {
                     __result.type = EventType.Ignore;
@@ -170,6 +182,17 @@ namespace DirectXOverlayer
         {
             public static bool Prefix()
             {
+                if (isEditingText)
+                {
+                    var str = Marshal.PtrToStringAnsi(Wrapper.GetStringWithReference(curEditingText));
+                    
+                    Wrapper.SetStringWithReference(curEditingText, GUI.TextArea(new Rect(Screen.width / 2 - 250 * 900 / Screen.height, Screen.height / 2 - 250 * 900 / Screen.height, 500 * 900 / Screen.height, 500 * 900 / Screen.height), str));
+                    if (GUI.Button(new Rect(Screen.width / 2 - 50 * 900 / Screen.height, Screen.height / 2 + 300 * 900 / Screen.height, 100 * 900 / Screen.height, 50 * 900 / Screen.height), translations[language]["Done"]))
+                    {
+                        isEditingText = false;
+                    }
+                    
+                }
                 return !Wrapper.isSetting;
             }
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using UnityEngine;
 using UnityModManagerNet;
 namespace DirectXOverlayer
 {
@@ -16,6 +17,14 @@ namespace DirectXOverlayer
 
         [DllImport("DirectXOverlayer.dll")]
         public static extern void Start();
+
+        [DllImport("DirectXOverlayer.dll")]
+        public static extern void SetStringWithReference(IntPtr reference, string str);
+
+        
+        [DllImport("DirectXOverlayer.dll")]
+        public static extern IntPtr GetStringWithReference(IntPtr reference);
+
 
         public static bool isSetting = false;
         public static bool isInitialized = false;
@@ -33,6 +42,8 @@ namespace DirectXOverlayer
         public delegate bool GetIsPlayingAPI();
         public delegate string GetTranslationAPI(string key);
         public delegate string ApplyTagsAPI(string str);
+        public delegate void OpenEditTextAPI(IntPtr txt);
+        public delegate bool GetIsEditingTextAPI();
 
         static void HelloWorld()
         {
@@ -44,11 +55,13 @@ namespace DirectXOverlayer
         }
         static bool GetIsSetting()
         {
+            if (Main.isEditingText) return false;
             return isSetting;
         }
         static void EndSetting()
         {
             isSetting = false;
+            //Input.imeCompositionMode = IMECompositionMode.Auto;
             UnityModManager.UI.Instance.ToggleWindow(false);
         }
         static void Log(string msg)
@@ -86,6 +99,19 @@ namespace DirectXOverlayer
             return strc;
         }
 
+        static void OpenEditText(IntPtr txt)
+        {
+            Main.entry.Logger.Log("Addr: " + txt);
+            Main.curEditingText = txt;
+            Main.isEditingText = true;
+            
+        }
+
+        static bool GetIsEditingText()
+        {
+            return Main.isEditingText;
+        }
+
 
         public static void Load()
         {
@@ -98,6 +124,8 @@ namespace DirectXOverlayer
             RegisterAPI(Marshal.GetFunctionPointerForDelegate(new GetIsPlayingAPI(GetIsPlaying)), "GetIsPlaying");
             RegisterAPI(Marshal.GetFunctionPointerForDelegate(new GetTranslationAPI(GetTranslation)), "GetTranslation");
             RegisterAPI(Marshal.GetFunctionPointerForDelegate(new ApplyTagsAPI(ApplyTags)), "ApplyTags");
+            RegisterAPI(Marshal.GetFunctionPointerForDelegate(new OpenEditTextAPI(OpenEditText)), "OpenEditText");
+            RegisterAPI(Marshal.GetFunctionPointerForDelegate(new GetIsEditingTextAPI(GetIsEditingText)), "GetIsEditingText");
 
             Start();
         }

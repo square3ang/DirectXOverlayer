@@ -13,11 +13,13 @@ static std::regex rgx("<color\\s*=\\s*(.*?)[^>]*>(.*?)<\\/color>");
 #define ApplyTags(str) ((const char*(*)(const char*))d3d11_impl::apiset["ApplyTags"])(str)
 
 
+
 void TextElement::Render() {
+
 
 	auto& io = ImGui::GetIO();
 
-	
+	ImGui::PushFont(d3d11_impl::GetDefaultFont(fontSize * io.DisplaySize.y / 900.0f));
 
 	ImVec2 startCurPos = ImGui::GetCursorPos();
 
@@ -123,15 +125,21 @@ void TextElement::Render() {
 
 	ImGui::TextUnformatted(norichcstr, NULL, &cols);
 
-	
+	ImGui::PopFont();
 }
 
 void TextElement::RenderSettingsUI() {
-	ImGui::InputTextMultiline(GetTranslation("Text"), &text);
-	ImGui::InputTextMultiline(GetTranslation("NotPlayingText"), &textNotPlaying);
+	if (ImGui::Button(GetTranslation("TextEdit"))) {
+		OpenEditText(&text);
+	}
+	if (ImGui::Button(GetTranslation("NotPlayingTextEdit"))) {
+		OpenEditText(&textNotPlaying);
+	}
+	ImGui::InputFloat(GetTranslation("FontSize"), &fontSize);
 }
 
 TextElement::TextElement(std::string name) : UIElement(name) {
 	this->text = defaultText;
 	this->textNotPlaying = defaultText;
+	this->fontSize = 60;
 }
