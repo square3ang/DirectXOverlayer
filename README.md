@@ -24,3 +24,4 @@ DirectXOverlayer is licensed under the GPLv3 License. See [LICENSE](LICENSE) for
 - [ImGui](https://github.com/bvgastel/imgui/tree/sdf) (SDF, Edited by me for Rich Text Color Support)
 - [DirectXHook](https://github.com/techiew/DirectXHook)
 - [css-color-parser-cpp](https://github.com/mapbox/css-color-parser-cpp)
+- [rapidjson](https://github.com/Tencent/rapidjson/)

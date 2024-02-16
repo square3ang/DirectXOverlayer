@@ -1,6 +1,5 @@
 #include "DirectXHook.h"
 
-#include "../minhook/include/MinHook.h"
 
 
 static DirectXHook* hookInstance = nullptr;
@@ -264,15 +263,8 @@ void DirectXHook::HookSwapChain(
 	MemoryUtils::ToggleMemoryProtection(true, vmtPresentIndex, numBytes);
 	MemoryUtils::ToggleMemoryProtection(true, vmtResizeBuffersIndex, numBytes);
 
-	/*
 	MemoryUtils::PlaceHook(presentAddress, presentDetourFunction, presentReturnAddress);
 	MemoryUtils::PlaceHook(resizeBuffersAddress, resizeBuffersDetourFunction, resizeBuffersReturnAddress);
-	*/
-	MH_CreateHook((LPVOID)presentAddress, (LPVOID)presentDetourFunction, (LPVOID*)presentReturnAddress);
-	MH_EnableHook((LPVOID)presentAddress);
-	MH_CreateHook((LPVOID)resizeBuffersAddress, (LPVOID)resizeBuffersDetourFunction, (LPVOID*)resizeBuffersReturnAddress);
-	MH_EnableHook((LPVOID)resizeBuffersAddress);
-
 	dummySwapChain->Release();
 }
 

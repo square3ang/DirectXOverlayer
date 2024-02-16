@@ -81,8 +81,20 @@ namespace DirectXOverlayer
             LoadTag<HexCodes>();
             LoadTag<JudgeTags>();
             
+            
 
             Wrapper.Load();
+
+            // Load Save
+            var savpath = Path.Combine(entry.Path, "save.json");
+            if (File.Exists(savpath))
+            {
+                var json = File.ReadAllText(savpath);
+                var jo = JObject.Parse(json);
+                language = jo["language"].ToString();
+                Wrapper.LoadSave(json);
+            }
+
 
 
             var harmony = new Harmony(entry.Info.Id);
@@ -95,6 +107,20 @@ namespace DirectXOverlayer
 
             entry.OnGUI = OnGUI;
             entry.OnUpdate = OnUpdate;
+            entry.OnSaveGUI = OnSaveGUI;
+        }
+
+        public static void OnSaveGUI(UnityModManager.ModEntry entry)
+        {
+            var savstr_ = Wrapper.Save();
+
+            var savstr = Marshal.PtrToStringAnsi(savstr_);
+
+            var jo = JObject.Parse(savstr);
+            jo["language"] = language;
+
+            File.WriteAllText(Path.Combine(entry.Path, "save.json"), jo.ToString());
+            Wrapper.FreeMemory(savstr_);
         }
 
         public static void LoadTag<T>()

@@ -25,6 +25,14 @@ namespace DirectXOverlayer
         [DllImport("DirectXOverlayer.dll")]
         public static extern IntPtr GetStringWithReference(IntPtr reference);
 
+        [DllImport("DirectXOverlayer.dll")]
+        public static extern IntPtr Save();
+
+        [DllImport("DirectXOverlayer.dll")]
+        public static extern void FreeMemory(IntPtr ptr);
+
+        [DllImport("DirectXOverlayer.dll")]
+        public static extern void LoadSave(string json);
 
         public static bool isSetting = false;
         public static bool isInitialized = false;

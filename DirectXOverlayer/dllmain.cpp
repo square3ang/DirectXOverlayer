@@ -1,6 +1,5 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
-#include "minhook/include/MinHook.h"
 #include "DirectXHook/DirectXHook.h"
 
 #include "windows.h"
@@ -42,6 +41,5 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 
 extern "C" __declspec(dllexport) void Start() {
-    MH_Initialize();
     CreateThread(0, 0, &HookThread, 0, 0, NULL);
 }

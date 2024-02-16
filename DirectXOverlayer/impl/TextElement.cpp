@@ -13,6 +13,17 @@ static std::regex rgx("<color\\s*=\\s*(.*?)[^>]*>(.*?)<\\/color>");
 #define ApplyTags(str) ((const char*(*)(const char*))d3d11_impl::apiset["ApplyTags"])(str)
 
 
+rapidjson::Value* TextElement::Save(rapidjson::Document* savefile)
+{
+	auto v = new rapidjson::Value(rapidjson::kObjectType);
+	auto allocator = savefile->GetAllocator();
+	v->AddMember(rapidjson::Value("text"), rapidjson::Value(text.c_str(), allocator), allocator);
+	v->AddMember(rapidjson::Value("textNotPlaying"), rapidjson::Value(textNotPlaying.c_str(), allocator), allocator);
+	v->AddMember(rapidjson::Value("fontSize"), rapidjson::Value(fontSize), allocator);
+
+	return v;
+}
+
 
 void TextElement::Render() {
 
@@ -136,6 +147,17 @@ void TextElement::RenderSettingsUI() {
 		OpenEditText(&textNotPlaying);
 	}
 	ImGui::InputFloat(GetTranslation("FontSize"), &fontSize);
+}
+
+std::string TextElement::GetType() {
+	return "TextElement";
+}
+
+void TextElement::LoadSettings(rapidjson::Value* obj)
+{
+	text = (*obj)["text"].GetString();
+	textNotPlaying = (*obj)["textNotPlaying"].GetString();
+	fontSize = (*obj)["fontSize"].GetFloat();
 }
 
 TextElement::TextElement(std::string name) : UIElement(name) {

@@ -27,13 +27,6 @@
 #include "../imgui/imgui_internal.h"
 #include <queue>
 
-#include "../minhook/include/MinHook.h"
-
-
-
-
-
-
 
 std::unordered_map<std::string, void*> d3d11_impl::apiset;
 static std::unordered_map<std::string, ImFont*> fontmap;
@@ -60,6 +53,64 @@ extern "C" __declspec(dllexport) void SetStringWithReference(std::string * refer
 
 extern "C" __declspec(dllexport) const char* GetStringWithReference(std::string * reference) {
 	return reference->c_str();
+}
+
+extern "C" __declspec(dllexport) char* Save() {
+	auto savefile = rapidjson::Document(rapidjson::kObjectType);
+	auto allocator = savefile.GetAllocator();
+
+	rapidjson::Value elems(rapidjson::kArrayType);
+	for (auto elem : elements) {
+		auto sav = elem->Save(&savefile);
+		sav->AddMember(rapidjson::Value("type"), rapidjson::Value(elem->GetType().c_str(), allocator), allocator);
+		sav->AddMember(rapidjson::Value("name"), rapidjson::Value(elem->name.c_str(), allocator), allocator);
+		sav->AddMember(rapidjson::Value("x"), rapidjson::Value(elem->x), allocator);
+		sav->AddMember(rapidjson::Value("y"), rapidjson::Value(elem->y), allocator);
+		elems.PushBack(*sav, allocator);
+		delete sav;
+	}
+	savefile.AddMember(rapidjson::Value("elements"), elems, allocator);
+
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+	savefile.Accept(writer);
+	auto str = buffer.GetString();
+	auto len = strlen(str)+1;
+	auto mem = (char*)malloc(len);
+	assert(mem != 0);
+	strcpy_s(mem, len, str);
+	return mem;
+}
+
+extern "C" __declspec(dllexport) void FreeMemory(void* ptr) {
+	free(ptr);
+}
+
+UIElement* MakeElementByType(std::string type, std::string name) {
+	if (type == "TextElement") {
+		return new TextElement(name);
+	}
+
+}
+
+extern "C" __declspec(dllexport) void LoadSave(const char* json) {
+	rapidjson::Document d;
+	d.Parse(json);
+
+	auto elems = d["elements"].GetArray();
+
+	for (rapidjson::Value::ConstValueIterator itr = elems.Begin(); itr != elems.End(); ++itr) { // Ok
+		auto ob = itr->GetObj();
+		
+		auto newelem = MakeElementByType(ob["type"].GetString(), ob["name"].GetString());
+
+		newelem->x = ob["x"].GetFloat();
+		newelem->y = ob["y"].GetFloat();
+
+		newelem->LoadSettings(const_cast<rapidjson::Value*>(itr));
+
+		elements.push_back(newelem);
+	}
 }
 
 static ImFontAtlas* alt;
