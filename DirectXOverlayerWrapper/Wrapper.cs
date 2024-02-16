@@ -93,7 +93,7 @@ namespace DirectXOverlayer
             foreach (var tag in Main.tags)
             {
                 if (!tag.Value.Item2 && !Main.IsPlaying || !str.Contains($"&[{tag.Key}]")) continue;
-                var val = tag.Value.Item1();
+                var val = isSetting ? tag.Value.Item3 : tag.Value.Item1();
                 try
                 {
                     strc = strc.Replace($"&[{tag.Key}]", val.ToString());

@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using DirectXOverlayer.Attributes;
 using MonoMod.Utils;
 using DirectXOverlayer.Tags;
+using System.Collections;
 
 namespace DirectXOverlayer
 {
@@ -32,7 +33,7 @@ namespace DirectXOverlayer
         public static Dictionary<string, Dictionary<string, string>> translations = new();
         public static string language = "KOREAN";
 
-        public static Dictionary<string, (Func<object>, bool)> tags = new();
+        public static Dictionary<string, (Func<object>, bool, object)> tags = new();
 
         public static bool isEditingText = false;
         public static IntPtr curEditingText;
@@ -96,6 +97,9 @@ namespace DirectXOverlayer
             entry.OnGUI = OnGUI;
             entry.OnUpdate = OnUpdate;
             entry.OnSaveGUI = OnSaveGUI;
+            var obj = new GameObject("Dummy");
+            UnityEngine.Object.DontDestroyOnLoad(obj);
+            obj.AddComponent<DummyBehaviour>().StartCoroutine(UpdateFPS());
         }
 
         public static void OnSaveGUI(UnityModManager.ModEntry entry)
@@ -122,7 +126,7 @@ namespace DirectXOverlayer
                 var attr = method.GetCustomAttribute<TagAttribute>();
                 if (attr != null)
                 {
-                    tags[attr.Name] = (() => method.Invoke(null, new object[] { }), attr.NonPlayingAvailable);
+                    tags[attr.Name] = (() => method.Invoke(null, new object[] { }), attr.NonPlayingAvailable, attr.Dummy == null ? method.Invoke(null, new object[] { }) : attr.Dummy);
                 }
             }
             foreach (var field in type.GetFields())
@@ -130,7 +134,7 @@ namespace DirectXOverlayer
                 var attr = field.GetCustomAttribute<FieldTagAttribute>();
                 if (attr != null)
                 {
-                    tags[attr.Name] = (() => field.GetValue(null), attr.NonPlayingAvailable);
+                    tags[attr.Name] = (() => field.GetValue(null), attr.NonPlayingAvailable, attr.Dummy == null ? field.GetValue(null) : attr.Dummy);
                 }
             }
         }
@@ -165,6 +169,15 @@ namespace DirectXOverlayer
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+        }
+        
+        public static IEnumerator UpdateFPS()
+        {
+            while (true)
+            {
+                PerformanceTags.Fps = 1 / Time.unscaledDeltaTime;
+                yield return new WaitForSecondsRealtime(0.5f);
+            }
         }
 
         public static void OnUpdate(UnityModManager.ModEntry entry, float delta)

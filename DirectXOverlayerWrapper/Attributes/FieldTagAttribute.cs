@@ -11,9 +11,12 @@ namespace DirectXOverlayer.Attributes
     {
         public string Name { get; private set; }
         public bool NonPlayingAvailable { get; private set; }
-        public FieldTagAttribute(string Name, bool NonPlayingAvailable = false) { 
+        public object Dummy { get; private set; }
+        public FieldTagAttribute(string Name, bool NonPlayingAvailable = false, object Dummy = null)
+        {
             this.Name = Name;
             this.NonPlayingAvailable = NonPlayingAvailable;
+            this.Dummy = Dummy;
         }
 
     }
