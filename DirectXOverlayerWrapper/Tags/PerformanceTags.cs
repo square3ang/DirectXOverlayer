@@ -10,7 +10,7 @@ namespace DirectXOverlayer.Tags
 {
     public class PerformanceTags
     {
-        [Tag("Fps")]
+        [Tag("Fps", true)]
         public static float Fps() => 1 / Time.deltaTime;
     }
 }
