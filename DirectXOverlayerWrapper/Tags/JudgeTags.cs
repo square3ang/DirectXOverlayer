@@ -23,6 +23,10 @@ namespace DirectXOverlayer.Tags
         public static double VL() => GetCurDiffCount(HitMargin.VeryLate);
         [Tag("CurTL")]
         public static double TL() => GetCurDiffCount(HitMargin.TooLate);
+        [Tag("CurMiss")]
+        public static double Miss() => GetCurDiffCount(HitMargin.FailMiss);
+        [Tag("CurOverload")]
+        public static double Overload() => GetCurDiffCount(HitMargin.FailOverload);
 
         public static double GetCurDiffCount(HitMargin margin)
         {
