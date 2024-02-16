@@ -32,8 +32,6 @@ namespace DirectXOverlayer
         public static Dictionary<string, Dictionary<string, string>> translations = new();
         public static string language = "KOREAN";
 
-        public static Dictionary<HitMargin, double> hitmarginCount = new();
-
         public static Dictionary<string, (Func<object>, bool)> tags = new();
 
         public static bool isEditingText = false;
@@ -48,14 +46,6 @@ namespace DirectXOverlayer
                 if (ctl != null && cdt != null)
                     return !ctl.paused && cdt.isGameWorld;
                 return false;
-            }
-        }
-        
-        public static void HitMarginCountReset()
-        {
-            foreach (var hm in Enum.GetValues(typeof(HitMargin)))
-            {
-                hitmarginCount[(HitMargin)hm] = 0;
             }
         }
 
@@ -73,9 +63,6 @@ namespace DirectXOverlayer
             entry.Logger.Log("Loading Translation");
             translations["KOREAN"] = JObject.Parse(File.ReadAllText(Path.Combine(entry.Path, "KOREAN.language"))).ToObject<Dictionary<string, string>>();
             translations["ENGLISH"] = JObject.Parse(File.ReadAllText(Path.Combine(entry.Path, "ENGLISH.language"))).ToObject<Dictionary<string, string>>();
-
-            // Add Hit Margins
-            HitMarginCountReset();
 
             // Load Tags
             LoadTag<HexCodes>();
@@ -248,30 +235,6 @@ namespace DirectXOverlayer
             {
                 if (Wrapper.isSetting) __result = 0;
             }
-        }
-
-        [HarmonyPatch(typeof(scrMisc), "GetHitMargin")]
-        public static class GetHitMarginPatch
-        {
-            public static void Postfix(ref HitMargin __result)
-            {
-                hitmarginCount[__result]++;
-            }
-        }
-
-        [HarmonyPatch(typeof(scrController), "Awake_Rewind")]
-        public static class Resetter
-        {
-            public static void Prefix(scrController __instance) => Reset(__instance);
-            public static void Reset(scrController __instance)
-            {
-                HitMarginCountReset();
-            }
-        }
-        [HarmonyPatch(typeof(scrController), "Start")]
-        public static class Resetter2
-        {
-            public static void Postfix(scrController __instance) => Resetter.Reset(__instance);
         }
 
     }

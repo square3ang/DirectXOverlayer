@@ -26,7 +26,7 @@ namespace DirectXOverlayer.Tags
 
         public static double GetCurDiffCount(HitMargin margin)
         {
-            return Main.hitmarginCount[margin];
+            return scrController.instance.mistakesManager.GetHits(margin);
         }
     }
 }
