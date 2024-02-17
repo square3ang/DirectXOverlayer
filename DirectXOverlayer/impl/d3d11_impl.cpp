@@ -392,8 +392,7 @@ void d3d11_impl::Render(Renderer* renderer)
 		if (wind != nullptr) {
 			ImGui::SetNextWindowSize(elem->GetSize());
 		}
-
-		if (issetting == lastIsSetting && issetting && wind != nullptr &&  elem->inited && ImGui::IsMouseDragging(ImGuiMouseButton_Left) && io.DisplaySize.x == lastScreenX && io.DisplaySize.y == lastScreenY && (wind->Pos.x != elem->actualX || wind->Pos.y != elem->actualY)) {
+		if (issetting == lastIsSetting && issetting && wind != nullptr &&  elem->inited && ImGui::GetCurrentContext()->NavWindow == wind && ImGui::IsMouseDragging(ImGuiMouseButton_Left) && io.DisplaySize.x == lastScreenX && io.DisplaySize.y == lastScreenY && (wind->Pos.x != elem->actualX || wind->Pos.y != elem->actualY)) {
 			auto posafter = ImVec2(wind->Pos);
 			posafter = ImVec2(posafter.x + wind->Size.x * elem->pivotX, posafter.y + wind->Size.y * elem->pivotY);
 			elem->x = posafter.x / io.DisplaySize.x;
