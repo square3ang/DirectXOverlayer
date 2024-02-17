@@ -107,10 +107,14 @@ extern "C" __declspec(dllexport) void LoadSave(const char* json) {
 		
 		auto newelem = MakeElementByType(ob["type"].GetString(), ob["name"].GetString());
 
-		newelem->x = ob["x"].GetFloat();
-		newelem->y = ob["y"].GetFloat();
-		newelem->pivotX = ob["pivotX"].GetFloat();
-		newelem->pivotY = ob["pivotY"].GetFloat();
+		if (ob.HasMember("x"))
+			newelem->x = ob["x"].GetFloat();
+		if (ob.HasMember("y"))
+			newelem->y = ob["y"].GetFloat();
+		if (ob.HasMember("pivotX"))
+			newelem->pivotX = ob["pivotX"].GetFloat();
+		if (ob.HasMember("pivotY"))
+			newelem->pivotY = ob["pivotY"].GetFloat();
 
 		newelem->LoadSettings(const_cast<rapidjson::Value*>(itr));
 

@@ -137,8 +137,8 @@ void TextElement::Render() {
 	
 
 	auto norichcstr = norichstring.c_str();
-	ImGui::SetCursorPos(ImVec2(startCurPos.x + 3 * io.DisplaySize.y / 900.0f, startCurPos.y + 3 * io.DisplaySize.y / 900.0f));
-	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 0.25f));
+	ImGui::SetCursorPos(ImVec2(startCurPos.x + 4 * io.DisplaySize.y / 900.0f, startCurPos.y + 4 * fontSize / 60 * io.DisplaySize.y / 900.0f));
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 0.35f));
 	ImGui::TextUnformatted(norichcstr);
 	ImGui::PopStyleColor();
 
@@ -166,9 +166,12 @@ std::string TextElement::GetType() {
 
 void TextElement::LoadSettings(rapidjson::Value* obj)
 {
-	text = (*obj)["text"].GetString();
-	textNotPlaying = (*obj)["textNotPlaying"].GetString();
-	fontSize = (*obj)["fontSize"].GetFloat();
+	if (obj->HasMember("text"))
+		text = (*obj)["text"].GetString();
+	if (obj->HasMember("textNotPlaying"))
+		textNotPlaying = (*obj)["textNotPlaying"].GetString();
+	if (obj->HasMember("fontSize"))
+		fontSize = (*obj)["fontSize"].GetFloat();
 }
 
 ImVec2 TextElement::GetSize()
@@ -186,6 +189,10 @@ ImVec2 TextElement::GetSize()
 	auto norichstring = pc.first;
 
 	auto siz = ImGui::CalcTextSize(norichstring.c_str());
+	auto inc = 4 * io.DisplaySize.y / 900.0f;
+	siz.x += inc;
+	siz.y += inc;
+
 	ImGui::PopFont();
 	return siz;
 }
