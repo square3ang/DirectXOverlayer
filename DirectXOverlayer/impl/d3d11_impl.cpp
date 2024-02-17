@@ -389,7 +389,11 @@ void d3d11_impl::Render(Renderer* renderer)
 
 		auto wind = ImGui::FindWindowByName(name.c_str());
 
-		if (issetting != lastIsSetting && issetting && wind != nullptr && elem->inited && io.DisplaySize.x == lastScreenX && io.DisplaySize.y == lastScreenY && (wind->Pos.x != elem->actualX || wind->Pos.y != elem->actualY)) {
+		if (wind != nullptr) {
+			ImGui::SetNextWindowSize(elem->GetSize());
+		}
+
+		if (issetting == lastIsSetting && issetting && wind != nullptr &&  elem->inited && ImGui::IsMouseDragging(ImGuiMouseButton_Left) && io.DisplaySize.x == lastScreenX && io.DisplaySize.y == lastScreenY && (wind->Pos.x != elem->actualX || wind->Pos.y != elem->actualY)) {
 			auto posafter = ImVec2(wind->Pos);
 			posafter = ImVec2(posafter.x + wind->Size.x * elem->pivotX, posafter.y + wind->Size.y * elem->pivotY);
 			elem->x = posafter.x / io.DisplaySize.x;
@@ -399,15 +403,18 @@ void d3d11_impl::Render(Renderer* renderer)
 		}
 		else {
 			ImGui::SetNextWindowPos(ImVec2(elem->x * io.DisplaySize.x, elem->y * io.DisplaySize.y), NULL, ImVec2(elem->pivotX, elem->pivotY));
+			auto nwd = ImGui::GetCurrentContext()->NextWindowData;
+			auto posafter = ImVec2(nwd.PosVal);
+			posafter = ImVec2(posafter.x - nwd.SizeVal.x * elem->pivotX, posafter.y - nwd.SizeVal.y * elem->pivotY);
+			elem->actualX = posafter.x;
+			elem->actualY = posafter.y;
 		}
 
 		if (!elem->inited) {
 			elem->inited = true;
 		}
 
-		if (wind != nullptr) {
-			ImGui::SetNextWindowSize(elem->GetSize());
-		}
+		
 		
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
 		ImGui::Begin(name.c_str(), NULL, (issetting ? ImGuiWindowFlags_None : ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground) | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
