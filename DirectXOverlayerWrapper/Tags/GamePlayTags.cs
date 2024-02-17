@@ -15,6 +15,18 @@ namespace DirectXOverlayer.Tags
             return (double)((!scrLevelMaker.instance) ? 0f : scrController.instance.percentComplete) * 100.0;
         }
 
+        [Tag("Accuracy", Dummy: 101.1)]
+        public static double Accuracy()
+        {
+            return scrController.instance.mistakesManager.percentAcc * 100.0;
+        }
+
+        [Tag("XAccuracy", Dummy: 99.3)]
+        public static double XAccuracy()
+        {
+            return scrController.instance.mistakesManager.percentXAcc * 100.0;
+        }
+
         [FieldTag("RealBpm", Dummy: 200)]
         public static double RealBpm;
         [FieldTag("TileBpm", Dummy: 100)]
