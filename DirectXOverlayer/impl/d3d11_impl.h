@@ -25,6 +25,8 @@ public:
 	static ImFont* GetDefaultFont(float pixel_size);
 	//static ImFont* GetArialFont(float pixel_size);
 	static std::unordered_map<std::string, void*> apiset;
+	static bool GetIsSimulatingInGame();
+private:
 	static bool simulateInGame;
 };
 

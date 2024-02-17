@@ -36,7 +36,9 @@ void TextElement::Render() {
 
 	auto isPlaying = ((bool*(*)())d3d11_impl::apiset["GetIsPlaying"])();
 
-	auto text = std::string(ApplyTags((isPlaying || d3d11_impl::simulateInGame) ? this->text.c_str() : this->textNotPlaying.c_str(), d3d11_impl::simulateInGame));
+	auto simulatingInGame = d3d11_impl::GetIsSimulatingInGame();
+
+	auto text = std::string(ApplyTags((isPlaying || simulatingInGame) ? this->text.c_str() : this->textNotPlaying.c_str(), simulatingInGame));
 
 	auto isincache = colcache.find(text) != colcache.end();
 

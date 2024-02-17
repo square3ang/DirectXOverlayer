@@ -114,7 +114,7 @@ namespace DirectXOverlayer
 
                     
 
-                    if (!tag.Item2 && (!Main.IsPlaying && !simulateInGame)) continue;
+                    if (!tag.Item2 && !Main.IsPlaying && !simulateInGame) continue;
 
                     var val = isSetting ? tag.Item3 : tag.Item1();
 

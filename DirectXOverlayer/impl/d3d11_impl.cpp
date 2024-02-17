@@ -152,6 +152,12 @@ ImFont* d3d11_impl::GetDefaultFont(float pixel_size) {
 	return fontmap[fntLoaded ? "Default" : "DefaultNP"];
 }
 
+bool d3d11_impl::GetIsSimulatingInGame()
+{
+	auto issetting = ((bool(*)())apiset["GetIsSetting"])();
+	return d3d11_impl::simulateInGame && issetting;
+}
+
 
 
 DWORD WINAPI LoadFontAsync(LPVOID lpParam)
