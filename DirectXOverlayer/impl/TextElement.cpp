@@ -6,7 +6,7 @@
 #include "../imgui/imgui_stdlib.h"
 
 
-#define defaultText "<color=#FF0000>D</color><color=#FF5F00>i</color><color=#FFBF00>r</color><color=#DFFF00>e</color><color=#7FFF00>c</color><color=#1FFF00>t</color><color=#00FF3F>X</color><color=#00FF9F>O</color><color=#00FEFF>v</color><color=#009FFF>e</color><color=#003FFF>r</color><color=#1F00FF>l</color><color=#7F00FF>a</color><color=#DF00FF>y</color><color=#FF00BF>e</color><color=#FF005F>r</color>"
+#define defaultText "<color=#&[FOHex]>&[CurOverload]</color> <color=#&[TEHex]>&[CurTE]</color> <color=#&[VEHex]>&[CurVE]</color> <color=#&[EPHex]>&[CurEP]</color> <color=#&[PHex]>&[CurP]</color> <color=#&[LPHex]>&[CurLP]</color> <color=#&[VLHex]>&[CurVL]</color> <color=#&[TLHex]>&[CurTL]</color> <color=#&[FMHex]>&[CurMiss]</color>"
 static std::unordered_map<std::string, std::pair< std::vector<std::pair<std::pair<int, int>, ImVec4>>, std::string>> colcache;
 static std::regex rgx("<color\\s*=\\s*(.*?)[^>]*>(.*?)<\\/color>");
 
@@ -279,5 +279,5 @@ ImVec2 TextElement::GetSize()
 
 TextElement::TextElement(std::string name) : UIElement(name) {
 	this->text = defaultText;
-	this->textNotPlaying = defaultText;
+	this->textNotPlaying = "";
 }
