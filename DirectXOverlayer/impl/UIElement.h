@@ -2,6 +2,7 @@
 
 #include <string>
 #include "../rapidjson/document.h"
+#include "../imgui/imgui.h"
 
 class UIElement
 {
@@ -11,6 +12,7 @@ public:
 	virtual rapidjson::Value* Save(rapidjson::Document* savefile);
 	virtual std::string GetType();
 	virtual void LoadSettings(rapidjson::Value* obj);
+	virtual ImVec2 GetSize();
 	
 	bool inited = false;
 	std::string name;

@@ -398,12 +398,17 @@ void d3d11_impl::Render(Renderer* renderer)
 		if (!elem->inited) {
 			elem->inited = true;
 		}
-		
 
-		ImGui::Begin(name.c_str(), NULL, (issetting ? ImGuiWindowFlags_None : ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground) | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
+		if (wind != nullptr) {
+			ImGui::SetNextWindowSize(elem->GetSize());
+		}
+		
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
+		ImGui::Begin(name.c_str(), NULL, (issetting ? ImGuiWindowFlags_None : ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground) | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
 		elem->Render();
 		
 		ImGui::End();
+		ImGui::PopStyleVar();
 
 
 	}

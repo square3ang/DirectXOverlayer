@@ -1,5 +1,6 @@
 #include "UIElement.h"
 #include <optional>
+#include "../imgui/imgui.h"
 
 
 void UIElement::Render() {
@@ -22,6 +23,10 @@ void UIElement::LoadSettings(rapidjson::Value* obj)
 
 void UIElement::RenderSettingsUI() {
 	
+}
+
+ImVec2 UIElement::GetSize() {
+	return ImVec2(0,0);
 }
 
 

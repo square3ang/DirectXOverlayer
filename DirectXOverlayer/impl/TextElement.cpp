@@ -24,30 +24,15 @@ rapidjson::Value* TextElement::Save(rapidjson::Document* savefile)
 	return v;
 }
 
-
-void TextElement::Render() {
-
-
-	auto& io = ImGui::GetIO();
-
-	ImGui::PushFont(d3d11_impl::GetDefaultFont(fontSize * io.DisplaySize.y / 900.0f));
-
-	ImVec2 startCurPos = ImGui::GetCursorPos();
-
-	auto isPlaying = ((bool*(*)())d3d11_impl::apiset["GetIsPlaying"])();
-
-	auto simulatingInGame = d3d11_impl::GetIsSimulatingInGame();
-
-	auto text = std::string(ApplyTags((isPlaying || simulatingInGame) ? this->text.c_str() : this->textNotPlaying.c_str(), simulatingInGame));
-
-	auto isincache = colcache.find(text) != colcache.end();
-
-	auto lstsuf = text;
-
+std::pair<std::string, std::vector<std::pair<std::pair<int, int>, ImVec4>>> ParseColor(std::string text) {
 	std::vector<std::pair<std::pair<int, int>, ImVec4>> cols;
 
 	std::vector<std::string> others;
 	std::vector<std::string> matches;
+
+	auto lstsuf = text;
+
+	auto isincache = colcache.find(text) != colcache.end();
 
 	if (!isincache) {
 
@@ -64,8 +49,8 @@ void TextElement::Render() {
 		cols.reserve(matches.size());
 	}
 
-	
-	
+
+
 
 	std::string norichstring;
 	if (isincache) {
@@ -89,12 +74,12 @@ void TextElement::Render() {
 			std::string color = "";
 
 			auto j = coltex.find_first_of('>');
-			color = coltex.substr(7, j-7);
+			color = coltex.substr(7, j - 7);
 			j++;
 
 			std::string just = "";
 
-			just = coltex.substr(j, coltex.find_last_of('<')-j);
+			just = coltex.substr(j, coltex.find_last_of('<') - j);
 
 			//((void(*)(const char*))apiset["Log"])(color.c_str());
 
@@ -127,6 +112,30 @@ void TextElement::Render() {
 
 	}
 
+	return std::make_pair(norichstring, cols);
+}
+
+void TextElement::Render() {
+
+
+	auto& io = ImGui::GetIO();
+
+	ImGui::PushFont(d3d11_impl::GetDefaultFont(fontSize * io.DisplaySize.y / 900.0f));
+
+	ImVec2 startCurPos = ImGui::GetCursorPos();
+
+	auto isPlaying = ((bool*(*)())d3d11_impl::apiset["GetIsPlaying"])();
+
+	auto simulatingInGame = d3d11_impl::GetIsSimulatingInGame();
+
+	auto text = std::string(ApplyTags((isPlaying || simulatingInGame) ? this->text.c_str() : this->textNotPlaying.c_str(), simulatingInGame));
+
+	
+
+	auto pc = ParseColor(text);
+	auto norichstring = pc.first;
+	
+
 	auto norichcstr = norichstring.c_str();
 	ImGui::SetCursorPos(ImVec2(startCurPos.x + 3 * io.DisplaySize.y / 900.0f, startCurPos.y + 3 * io.DisplaySize.y / 900.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 0.25f));
@@ -136,7 +145,7 @@ void TextElement::Render() {
 
 	ImGui::SetCursorPos(startCurPos);
 
-	ImGui::TextUnformatted(norichcstr, NULL, &cols);
+	ImGui::TextUnformatted(norichcstr, NULL, &pc.second);
 
 	ImGui::PopFont();
 }
@@ -160,6 +169,25 @@ void TextElement::LoadSettings(rapidjson::Value* obj)
 	text = (*obj)["text"].GetString();
 	textNotPlaying = (*obj)["textNotPlaying"].GetString();
 	fontSize = (*obj)["fontSize"].GetFloat();
+}
+
+ImVec2 TextElement::GetSize()
+{
+	auto& io = ImGui::GetIO();
+
+	ImGui::PushFont(d3d11_impl::GetDefaultFont(fontSize * io.DisplaySize.y / 900.0f));
+	auto isPlaying = ((bool* (*)())d3d11_impl::apiset["GetIsPlaying"])();
+
+	auto simulatingInGame = d3d11_impl::GetIsSimulatingInGame();
+
+	auto text = ApplyTags((isPlaying || simulatingInGame) ? this->text.c_str() : this->textNotPlaying.c_str(), simulatingInGame);
+
+	auto pc = ParseColor(text);
+	auto norichstring = pc.first;
+
+	auto siz = ImGui::CalcTextSize(norichstring.c_str());
+	ImGui::PopFont();
+	return siz;
 }
 
 TextElement::TextElement(std::string name) : UIElement(name) {
