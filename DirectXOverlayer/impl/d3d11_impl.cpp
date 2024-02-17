@@ -29,6 +29,7 @@
 
 
 std::unordered_map<std::string, void*> d3d11_impl::apiset;
+bool d3d11_impl::simulateInGame = false;
 static std::unordered_map<std::string, ImFont*> fontmap;
 
 static std::list<UIElement*> elements;
@@ -267,6 +268,8 @@ void d3d11_impl::Render(Renderer* renderer)
 			elements.push_back(elem);
 			Log((name + " added").c_str());
 		}
+
+		ImGui::Checkbox(GetTranslation("SimulateInGame"), &simulateInGame);
 
 		ImGui::TextUnformatted(GetTranslation("Elements"));
 

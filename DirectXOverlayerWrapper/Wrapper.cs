@@ -52,7 +52,7 @@ namespace DirectXOverlayer
         public delegate void SetInitializedAPI(bool value);
         public delegate bool GetIsPlayingAPI();
         public delegate string GetTranslationAPI(string key);
-        public delegate string ApplyTagsAPI(string str);
+        public delegate string ApplyTagsAPI(string str, bool simulateImGame);
         public delegate void OpenEditTextAPI(IntPtr txt);
         public delegate bool GetIsEditingTextAPI();
 
@@ -90,7 +90,7 @@ namespace DirectXOverlayer
         {
             return Main.translations[Main.language][key];
         }
-        static string ApplyTags(string str)
+        static string ApplyTags(string str, bool simulateInGame)
         {
             var strc = str;
 
@@ -114,7 +114,7 @@ namespace DirectXOverlayer
 
                     
 
-                    if (!tag.Item2 && !Main.IsPlaying) continue;
+                    if (!tag.Item2 && (!Main.IsPlaying && !simulateInGame)) continue;
 
                     var val = isSetting ? tag.Item3 : tag.Item1();
 

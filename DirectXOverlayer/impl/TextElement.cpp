@@ -10,7 +10,7 @@
 static std::unordered_map<std::string, std::pair< std::vector<std::pair<std::pair<int, int>, ImVec4>>, std::string>> colcache;
 static std::regex rgx("<color\\s*=\\s*(.*?)[^>]*>(.*?)<\\/color>");
 
-#define ApplyTags(str) ((const char*(*)(const char*))d3d11_impl::apiset["ApplyTags"])(str)
+#define ApplyTags(str, smig) ((const char*(*)(const char*, bool))d3d11_impl::apiset["ApplyTags"])(str, smig)
 
 
 rapidjson::Value* TextElement::Save(rapidjson::Document* savefile)
@@ -36,7 +36,7 @@ void TextElement::Render() {
 
 	auto isPlaying = ((bool*(*)())d3d11_impl::apiset["GetIsPlaying"])();
 
-	auto text = std::string(ApplyTags(isPlaying ? this->text.c_str() : this->textNotPlaying.c_str()));
+	auto text = std::string(ApplyTags((isPlaying || d3d11_impl::simulateInGame) ? this->text.c_str() : this->textNotPlaying.c_str(), d3d11_impl::simulateInGame));
 
 	auto isincache = colcache.find(text) != colcache.end();
 
