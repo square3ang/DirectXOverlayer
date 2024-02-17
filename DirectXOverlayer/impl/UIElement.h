@@ -20,6 +20,9 @@ public:
 	float actualX = 0;
 	float actualY = 0;
 
+	float pivotX = 0.5;
+	float pivotY = 0.5;
+
 	bool isSettingOpen = false;
 	bool useTextInput = false;
 

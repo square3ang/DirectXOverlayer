@@ -67,6 +67,8 @@ extern "C" __declspec(dllexport) char* Save() {
 		sav->AddMember(rapidjson::Value("name"), rapidjson::Value(elem->name.c_str(), allocator), allocator);
 		sav->AddMember(rapidjson::Value("x"), rapidjson::Value(elem->x), allocator);
 		sav->AddMember(rapidjson::Value("y"), rapidjson::Value(elem->y), allocator);
+		sav->AddMember(rapidjson::Value("pivotX"), rapidjson::Value(elem->pivotX), allocator);
+		sav->AddMember(rapidjson::Value("pivotY"), rapidjson::Value(elem->pivotY), allocator);
 		elems.PushBack(*sav, allocator);
 		delete sav;
 	}
@@ -107,6 +109,8 @@ extern "C" __declspec(dllexport) void LoadSave(const char* json) {
 
 		newelem->x = ob["x"].GetFloat();
 		newelem->y = ob["y"].GetFloat();
+		newelem->pivotX = ob["pivotX"].GetFloat();
+		newelem->pivotY = ob["pivotY"].GetFloat();
 
 		newelem->LoadSettings(const_cast<rapidjson::Value*>(itr));
 
@@ -333,11 +337,16 @@ void d3d11_impl::Render(Renderer* renderer)
 				if (elem->useTextInput) {
 					ImGui::InputFloat("X", &elem->x);
 					ImGui::InputFloat("Y", &elem->y);
+					ImGui::InputFloat("Pivot X", &elem->pivotX);
+					ImGui::InputFloat("Pivot Y", &elem->pivotY);
 				}
 				else {
 					ImGui::SliderFloat("X", &elem->x, 0, 1);
 					ImGui::SliderFloat("Y", &elem->y, 0, 1);
+					ImGui::SliderFloat("Pivot X", &elem->pivotX, 0, 1);
+					ImGui::SliderFloat("Pivot Y", &elem->pivotY, 0, 1);
 				}
+				
 				
 
 				elem->RenderSettingsUI();
@@ -376,14 +385,14 @@ void d3d11_impl::Render(Renderer* renderer)
 
 		if (issetting && wind != nullptr && elem->inited && io.DisplaySize.x == lastScreenX && io.DisplaySize.y == lastScreenY && (wind->Pos.x != elem->actualX || wind->Pos.y != elem->actualY)) {
 			auto posafter = ImVec2(wind->Pos);
-			posafter = ImVec2(posafter.x + wind->Size.x / 2, posafter.y + wind->Size.y / 2);
+			posafter = ImVec2(posafter.x + wind->Size.x * elem->pivotX, posafter.y + wind->Size.y * elem->pivotY);
 			elem->x = posafter.x / io.DisplaySize.x;
 			elem->y = posafter.y / io.DisplaySize.y;
 			elem->actualX = wind->Pos.x;
 			elem->actualY = wind->Pos.y;
 		}
 		else {
-			ImGui::SetNextWindowPos(ImVec2(elem->x * io.DisplaySize.x, elem->y * io.DisplaySize.y), NULL, ImVec2(0.5, 0.5));
+			ImGui::SetNextWindowPos(ImVec2(elem->x * io.DisplaySize.x, elem->y * io.DisplaySize.y), NULL, ImVec2(elem->pivotX, elem->pivotY));
 		}
 
 		if (!elem->inited) {
