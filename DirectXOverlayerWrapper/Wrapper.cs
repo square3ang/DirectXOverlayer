@@ -1,16 +1,19 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityModManagerNet;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 namespace DirectXOverlayer
 {
 
     internal class Wrapper
     {
-
+        public static Regex tagRegex = new Regex(@"&\[(.*?)\]");
 
         [DllImport("DirectXOverlayer.dll", CharSet = CharSet.Ansi)]
         public static extern void RegisterAPI(IntPtr addr, string APIName);
@@ -90,19 +93,71 @@ namespace DirectXOverlayer
         static string ApplyTags(string str)
         {
             var strc = str;
-            foreach (var tag in Main.tags)
+
+            var mc = tagRegex.Matches(str);
+
+            foreach (Match m in mc)
             {
-                if (!tag.Value.Item2 && !Main.IsPlaying || !str.Contains($"&[{tag.Key}]")) continue;
-                var val = isSetting ? tag.Value.Item3 : tag.Value.Item1();
-                try
+                var d = m.Result("$1");
+                var spl = d.Split(':');
+
+                if (Main.tags.ContainsKey(spl[0]))
                 {
-                    strc = strc.Replace($"&[{tag.Key}]", val.ToString());
+
+                    
+
+                    var tagname = spl[0];
+
+                    
+
+                    var tag = Main.tags[tagname];
+
+                    
+
+                    if (!tag.Item2 && !Main.IsPlaying) continue;
+
+                    var val = isSetting ? tag.Item3 : tag.Item1();
+
+
+
+
+                    var fmtstr = "";
+
+                    if (spl.Length > 1 && val is double or float)
+                    {
+                        var f = spl[1];
+                        if (!int.TryParse(f, out var i)) continue;
+                        if (i > 0)
+                        {
+                            fmtstr = "0." + new string('#', i);
+                        }
+                        else if (i == 0)
+                        {
+                            fmtstr = "0";
+                        }
+                    }
+
+
+                    if (fmtstr != "")
+                    {
+                        if (val is double)
+                        {
+                            strc = strc.Replace(m.Value, ((double)val).ToString(fmtstr));
+                        }
+                        else if (val is float)
+                        {
+                            strc = strc.Replace(m.Value, ((float)val).ToString(fmtstr));
+                        }
+                    } 
+                    else
+                    {
+                        strc = strc.Replace(m.Value, val.ToString());
+                    }
+                    
                 }
-                catch
-                {
-                    continue;
-                }
+               
             }
+
             return strc;
         }
 
