@@ -37,6 +37,8 @@ static std::list<UIElement*> elements;
 static int lastScreenY = 0;
 static int lastScreenX = 0;
 
+static bool lastIsSetting = false;
+
 WNDPROC oWndProc;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -387,7 +389,7 @@ void d3d11_impl::Render(Renderer* renderer)
 
 		auto wind = ImGui::FindWindowByName(name.c_str());
 
-		if (issetting && wind != nullptr && elem->inited && io.DisplaySize.x == lastScreenX && io.DisplaySize.y == lastScreenY && (wind->Pos.x != elem->actualX || wind->Pos.y != elem->actualY)) {
+		if (issetting != lastIsSetting && issetting && wind != nullptr && elem->inited && io.DisplaySize.x == lastScreenX && io.DisplaySize.y == lastScreenY && (wind->Pos.x != elem->actualX || wind->Pos.y != elem->actualY)) {
 			auto posafter = ImVec2(wind->Pos);
 			posafter = ImVec2(posafter.x + wind->Size.x * elem->pivotX, posafter.y + wind->Size.y * elem->pivotY);
 			elem->x = posafter.x / io.DisplaySize.x;
@@ -436,6 +438,7 @@ void d3d11_impl::Render(Renderer* renderer)
 
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	
+	lastIsSetting = issetting;
 
 }
 
