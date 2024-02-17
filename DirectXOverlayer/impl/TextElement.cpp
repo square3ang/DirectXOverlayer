@@ -137,7 +137,7 @@ void TextElement::Render() {
 	
 
 	auto norichcstr = norichstring.c_str();
-	ImGui::SetCursorPos(ImVec2(startCurPos.x + 4 * io.DisplaySize.y / 900.0f, startCurPos.y + 4 * fontSize / 60 * io.DisplaySize.y / 900.0f));
+	ImGui::SetCursorPos(ImVec2(startCurPos.x + 3 * io.DisplaySize.y / 900.0f, startCurPos.y + 3 * fontSize / 60 * io.DisplaySize.y / 900.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 0.35f));
 	ImGui::TextUnformatted(norichcstr);
 	ImGui::PopStyleColor();
@@ -189,7 +189,7 @@ ImVec2 TextElement::GetSize()
 	auto norichstring = pc.first;
 
 	auto siz = ImGui::CalcTextSize(norichstring.c_str());
-	auto inc = 4 * io.DisplaySize.y / 900.0f;
+	auto inc = 3 * io.DisplaySize.y / 900.0f;
 	siz.x += inc;
 	siz.y += inc;
 
