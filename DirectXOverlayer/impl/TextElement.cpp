@@ -20,6 +20,7 @@ rapidjson::Value* TextElement::Save(rapidjson::Document* savefile)
 	v->AddMember(rapidjson::Value("text"), rapidjson::Value(text.c_str(), allocator), allocator);
 	v->AddMember(rapidjson::Value("textNotPlaying"), rapidjson::Value(textNotPlaying.c_str(), allocator), allocator);
 	v->AddMember(rapidjson::Value("fontSize"), rapidjson::Value(fontSize), allocator);
+	v->AddMember(rapidjson::Value("textPivotX"), rapidjson::Value(textPivotX), allocator);
 
 	return v;
 }
@@ -115,6 +116,24 @@ std::pair<std::string, std::vector<std::pair<std::pair<int, int>, ImVec4>>> Pars
 	return std::make_pair(norichstring, cols);
 }
 
+std::vector<std::string> split(std::string input, char delimiter) {
+	std::vector<std::string> answer;
+	std::stringstream ss(input);
+	std::string temp;
+
+	while (getline(ss, temp, delimiter)) {
+		answer.push_back(temp);
+	}
+
+	return answer;
+}
+
+float calcCurPosX(TextElement* element, std::string str) {
+	auto& io = ImGui::GetIO();
+	auto inc = 3 * element->fontSize / 60 * io.DisplaySize.y / 900.0f;
+	return (ImGui::GetWindowWidth() - inc - ImGui::CalcTextSize(str.c_str()).x) * element->textPivotX;
+}
+
 void TextElement::Render() {
 
 
@@ -122,7 +141,8 @@ void TextElement::Render() {
 
 	ImGui::PushFont(d3d11_impl::GetDefaultFont(fontSize * io.DisplaySize.y / 900.0f));
 
-	ImVec2 startCurPos = ImGui::GetCursorPos();
+
+	
 
 	auto isPlaying = ((bool*(*)())d3d11_impl::apiset["GetIsPlaying"])();
 
@@ -135,19 +155,70 @@ void TextElement::Render() {
 	auto pc = ParseColor(text);
 	auto norichstring = pc.first;
 	
+	auto spl = split(norichstring, '\n');
 
-	auto norichcstr = norichstring.c_str();
-	ImGui::SetCursorPos(ImVec2(startCurPos.x + 3 * io.DisplaySize.y / 900.0f, startCurPos.y + 3 * fontSize / 60 * io.DisplaySize.y / 900.0f));
+	auto off = ImGui::GetCursorPos();
+
+	ImGui::SetCursorPos(ImVec2(0, 3 * fontSize / 60 * io.DisplaySize.y / 900.0f));
 	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 0.35f));
-	ImGui::TextUnformatted(norichcstr);
+	
+	for (auto a : spl) {
+		
+		ImGui::SetCursorPosX(off.x + calcCurPosX(this, a) + 3 * fontSize / 60 * io.DisplaySize.y / 900.0f);
+
+		ImGui::TextUnformatted(a.c_str());
+	}
+	
 	ImGui::PopStyleColor();
 
+	ImGui::SetCursorPos(off);
 
-	ImGui::SetCursorPos(startCurPos);
+	auto wow = std::vector<std::vector<std::pair<std::pair<int, int>, ImVec4>>>();
+	auto spllst = std::vector<int>();
 
-	ImGui::TextUnformatted(norichcstr, NULL, &pc.second);
+	for (auto a : spl) {
+		Log(std::to_string(a.length()).c_str());
+		spllst.push_back(a.length());
+	}
+
+	auto c = std::vector<std::pair<std::pair<int, int>, ImVec4>>();
+	auto idx = 0;
+	for (auto a : pc.second) {
+		
+		if (a.first.first >= spllst[idx]) { 
+			idx++;
+			wow.push_back(std::vector<std::pair<std::pair<int, int>, ImVec4>>(c));
+			c.clear();
+		}
+		Log(("idx: " + std::to_string(idx)).c_str());
+		Log(("siz: " + std::to_string(spllst.size())).c_str());
+		if (idx - 1 > -1) {
+			a.first.first -= spllst[idx - 1] + 1;
+			a.first.second -= spllst[idx - 1] + 1;
+		}
+
+		Log(("first: " + std::to_string(a.first.first)).c_str());
+		c.push_back(a);
+	}
+	wow.push_back(c);
+	
+	Log("size");
+	Log(std::to_string(wow.size()).c_str());
+	
+	auto i = 0;
+	for (auto a : spl) {
+
+		ImGui::SetCursorPosX(off.x + calcCurPosX(this, a));
+
+		if (wow.size() <= i) ImGui::TextUnformatted(a.c_str());
+		else ImGui::TextUnformatted(a.c_str(), NULL, &wow[i]);
+		i++;
+	}
+
 
 	ImGui::PopFont();
+
+	
 }
 
 void TextElement::RenderSettingsUI() {
@@ -158,6 +229,13 @@ void TextElement::RenderSettingsUI() {
 		OpenEditText(&textNotPlaying);
 	}
 	ImGui::InputFloat(GetTranslation("FontSize"), &fontSize);
+
+	if (useTextInput) {
+		ImGui::InputFloat("Text Pivot X", &textPivotX);
+	}
+	else {
+		ImGui::SliderFloat("Text Pivot X", &textPivotX, 0, 1);
+	}
 }
 
 std::string TextElement::GetType() {
@@ -172,6 +250,8 @@ void TextElement::LoadSettings(rapidjson::Value* obj)
 		textNotPlaying = (*obj)["textNotPlaying"].GetString();
 	if (obj->HasMember("fontSize"))
 		fontSize = (*obj)["fontSize"].GetFloat();
+	if (obj->HasMember("textPivotX"))
+		textPivotX = (*obj)["textPivotX"].GetFloat();
 }
 
 ImVec2 TextElement::GetSize()
@@ -189,7 +269,7 @@ ImVec2 TextElement::GetSize()
 	auto norichstring = pc.first;
 
 	auto siz = ImGui::CalcTextSize(norichstring.c_str());
-	auto inc = 3 * io.DisplaySize.y / 900.0f;
+	auto inc = 3 * fontSize / 60 * io.DisplaySize.y / 900.0f;
 	siz.x += inc;
 	siz.y += inc;
 
@@ -200,5 +280,4 @@ ImVec2 TextElement::GetSize()
 TextElement::TextElement(std::string name) : UIElement(name) {
 	this->text = defaultText;
 	this->textNotPlaying = defaultText;
-	this->fontSize = 60;
 }

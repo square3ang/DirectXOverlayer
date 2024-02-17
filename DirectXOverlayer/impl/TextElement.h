@@ -14,7 +14,8 @@ public:
 	
 	std::string text;
 	std::string textNotPlaying;
-	float fontSize;
+	float fontSize = 60;
+	float textPivotX = 0.5;
 
 	TextElement(std::string name);
 };
