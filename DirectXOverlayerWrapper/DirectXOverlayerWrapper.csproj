@@ -192,6 +192,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
@@ -215,9 +216,11 @@
   <ItemGroup>
     <Compile Include="Attributes\FieldTagAttribute.cs" />
     <Compile Include="Attributes\TagAttribute.cs" />
+    <Compile Include="BpmUpdater.cs" />
     <Compile Include="DummyBehaviour.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tags\GamePlayTags.cs" />
     <Compile Include="Tags\HexCodes.cs" />
     <Compile Include="Tags\JudgeTags.cs" />
     <Compile Include="Tags\PerformanceTags.cs" />

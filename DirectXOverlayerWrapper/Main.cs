@@ -69,6 +69,7 @@ namespace DirectXOverlayer
             LoadTag<HexCodes>();
             LoadTag<JudgeTags>();
             LoadTag<PerformanceTags>();
+            LoadTag<GamePlayTags>();
             
             
 
