@@ -8,6 +8,7 @@
 
 #define defaultText "<color=#&[FOHex]>&[CurOverload]</color> <color=#&[TEHex]>&[CurTE]</color> <color=#&[VEHex]>&[CurVE]</color> <color=#&[EPHex]>&[CurEP]</color> <color=#&[PHex]>&[CurP]</color> <color=#&[LPHex]>&[CurLP]</color> <color=#&[VLHex]>&[CurVL]</color> <color=#&[TLHex]>&[CurTL]</color> <color=#&[FMHex]>&[CurMiss]</color>"
 static std::unordered_map<std::string, std::pair< std::vector<std::pair<std::pair<int, int>, ImVec4>>, std::string>> colcache;
+static std::list<std::string> used;
 static std::regex rgx("<color\\s*=\\s*(.*?)[^>]*>(.*?)<\\/color>");
 
 #define ApplyTags(str, smig) ((const char*(*)(const char*, bool))d3d11_impl::apiset["ApplyTags"])(str, smig)
@@ -50,6 +51,8 @@ std::pair<std::string, std::vector<std::pair<std::pair<int, int>, ImVec4>>> Pars
 		cols.reserve(matches.size());
 	}
 
+	
+
 
 
 
@@ -58,6 +61,8 @@ std::pair<std::string, std::vector<std::pair<std::pair<int, int>, ImVec4>>> Pars
 		auto p = colcache[text];
 		cols = p.first;
 		norichstring = p.second;
+
+		used.push_back(text);
 	}
 	else if (others.size() == 0) {
 		norichstring = text;
@@ -107,7 +112,7 @@ std::pair<std::string, std::vector<std::pair<std::pair<int, int>, ImVec4>>> Pars
 		norichstring += lstsuf;
 
 		colcache[text] = std::make_pair(cols, norichstring);
-
+		used.push_back(text);
 
 
 
@@ -180,7 +185,7 @@ void TextElement::Render() {
 	auto spllst = std::vector<int>();
 
 	for (auto a : spl) {
-		Log(std::to_string(a.length()).c_str());
+		//Log(std::to_string(a.length()).c_str());
 		spllst.push_back(a.length());
 	}
 
@@ -193,20 +198,18 @@ void TextElement::Render() {
 			wow.push_back(std::vector<std::pair<std::pair<int, int>, ImVec4>>(c));
 			c.clear();
 		}
-		Log(("idx: " + std::to_string(idx)).c_str());
-		Log(("siz: " + std::to_string(spllst.size())).c_str());
+
 		if (idx - 1 > -1) {
 			a.first.first -= spllst[idx - 1] + 1;
 			a.first.second -= spllst[idx - 1] + 1;
 		}
 
-		Log(("first: " + std::to_string(a.first.first)).c_str());
+
 		c.push_back(a);
 	}
 	wow.push_back(c);
 	
-	Log("size");
-	Log(std::to_string(wow.size()).c_str());
+
 	
 	auto i = 0;
 	for (auto a : spl) {
@@ -278,6 +281,19 @@ ImVec2 TextElement::GetSize()
 
 	ImGui::PopFont();
 	return siz;
+}
+
+
+
+void TextElement::CheckColCache()
+{
+	for (auto c : colcache) {
+		if (std::find(used.begin(), used.end(), c.first) == used.end()) {
+			colcache.erase(c.first);
+		}
+		
+	}
+	used.clear();
 }
 
 TextElement::TextElement(std::string name) : UIElement(name) {

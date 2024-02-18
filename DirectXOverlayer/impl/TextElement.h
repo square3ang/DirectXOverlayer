@@ -12,6 +12,8 @@ public:
 	virtual void LoadSettings(rapidjson::Value* obj);
 	virtual ImVec2 GetSize();
 	
+	static void CheckColCache();
+
 	std::string text;
 	std::string textNotPlaying;
 	float fontSize = 60;

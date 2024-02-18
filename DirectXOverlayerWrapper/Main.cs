@@ -155,6 +155,15 @@ namespace DirectXOverlayer
 
             GUILayout.Space(10);
 
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button(translations[language]["OpenWiki"]))
+            {
+                Application.OpenURL("http://wiki.dxoverlayer.kro.kr");
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.Space(10);
+
             if (!Wrapper.isInitialized)
             {
                 GUILayout.Label($"<color=yellow>{translations[language]["FontBrokenAlert"]}</color>");

@@ -375,9 +375,6 @@ void d3d11_impl::Render(Renderer* renderer)
 	}
 
 	
-
-	
-	
 	// Render
 	for (auto elem : elements) {
 		if (issetting) ImGui::SetNextWindowBgAlpha(0.0f);
@@ -424,6 +421,8 @@ void d3d11_impl::Render(Renderer* renderer)
 
 
 	}
+
+	TextElement::CheckColCache();
 
 	
 
