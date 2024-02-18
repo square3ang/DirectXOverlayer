@@ -126,10 +126,16 @@ namespace DirectXOverlayer
                     if (spl.Length > 1 && val is double or float)
                     {
                         var f = spl[1];
+                        bool showZero = false;
+                        if (f.EndsWith("-"))
+                        {
+                            showZero = true;
+                            f = f.Substring(0, f.Length - 1);
+                        }
                         if (!int.TryParse(f, out var i)) continue;
                         if (i > 0)
                         {
-                            fmtstr = "0." + new string('#', i);
+                            fmtstr = "0." + new string(showZero ? '0' : '#', i);
                         }
                         else if (i == 0)
                         {
