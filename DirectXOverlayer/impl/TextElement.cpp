@@ -128,10 +128,9 @@ std::vector<std::string> split(std::string input, char delimiter) {
 	return answer;
 }
 
-float calcCurPosX(TextElement* element, std::string str) {
+float calcCurPosX(TextElement* element, std::string str, std::string fullstr) {
 	auto& io = ImGui::GetIO();
-	auto inc = 3 * element->fontSize / 60 * io.DisplaySize.y / 900.0f;
-	return (ImGui::GetWindowWidth() - inc - ImGui::CalcTextSize(str.c_str()).x) * element->textPivotX;
+	return (ImGui::CalcTextSize(fullstr.c_str()).x - ImGui::CalcTextSize(str.c_str()).x) * element->textPivotX;
 }
 
 void TextElement::Render() {
@@ -159,12 +158,16 @@ void TextElement::Render() {
 
 	auto off = ImGui::GetCursorPos();
 
-	ImGui::SetCursorPos(ImVec2(0, 3 * fontSize / 60 * io.DisplaySize.y / 900.0f));
+	auto inc = 3 * fontSize / 60 * io.DisplaySize.y / 900.0f;
+
+	ImGui::SetCursorPos(ImVec2(0, inc));
 	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 0.35f));
 	
+	
+
 	for (auto a : spl) {
 		
-		ImGui::SetCursorPosX(off.x + calcCurPosX(this, a) + 3 * fontSize / 60 * io.DisplaySize.y / 900.0f);
+		ImGui::SetCursorPosX(off.x + calcCurPosX(this, a, norichstring) + inc);
 
 		ImGui::TextUnformatted(a.c_str());
 	}
@@ -208,7 +211,7 @@ void TextElement::Render() {
 	auto i = 0;
 	for (auto a : spl) {
 
-		ImGui::SetCursorPosX(off.x + calcCurPosX(this, a));
+		ImGui::SetCursorPosX(off.x + calcCurPosX(this, a, norichstring));
 
 		if (wow.size() <= i) ImGui::TextUnformatted(a.c_str());
 		else ImGui::TextUnformatted(a.c_str(), NULL, &wow[i]);
